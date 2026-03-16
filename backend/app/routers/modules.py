@@ -14,8 +14,8 @@ EXTENSION_TYPE: dict[str, FileType] = {
 }
 
 # Archivos a excluir: versiones genéricas sin "_José_Picón"
-# Patrón: Modulo\d+.pdf  e  Introduccion.pdf
-_EXCLUDE = re.compile(r'^(Modulo\d+|Introduccion)\.pdf$', re.IGNORECASE)
+# Patrón: Modulo\d+.pdf  (solo el genérico, sin sufijo de autor)
+_EXCLUDE = re.compile(r'^Modulo\d+\.pdf$', re.IGNORECASE)
 
 
 def _scan_module_files(module_dir: str, module_slug: str) -> list[CourseFile]:

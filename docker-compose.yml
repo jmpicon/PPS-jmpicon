@@ -7,12 +7,12 @@ services:
     container_name: cursopps-backend
     restart: unless-stopped
     volumes:
-      - ./Modulo1:/content/Modulo1:ro
-      - ./Modulo2:/content/Modulo2:ro
-      - ./Modulo3:/content/Modulo3:ro
-      - ./Modulo4:/content/Modulo4:ro
-      - ./Modulo5:/content/Modulo5:ro
-      - ./Modulo6:/content/Modulo6:ro
+      - ./modulo-1:/content/Modulo1:ro
+      - ./modulo-2:/content/Modulo2:ro
+      - ./modulo-3:/content/Modulo3:ro
+      - ./modulo-4:/content/Modulo4:ro
+      - ./modulo-5:/content/Modulo5:ro
+      - ./modulo-6:/content/Modulo6:ro
     environment:
       - PYTHONUNBUFFERED=1
       - CONTENT_DIR=/content
