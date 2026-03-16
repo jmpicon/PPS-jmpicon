@@ -1,0 +1,86 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: cursopps-backend:latest
+    container_name: cursopps-backend
+    restart: unless-stopped
+    volumes:
+      - ./Modulo1:/content/Modulo1:ro
+      - ./Modulo2:/content/Modulo2:ro
+      - ./Modulo3:/content/Modulo3:ro
+      - ./Modulo4:/content/Modulo4:ro
+      - ./Modulo5:/content/Modulo5:ro
+      - ./Modulo6:/content/Modulo6:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CONTENT_DIR=/content
+      - SECRET_KEY=${SECRET_KEY:-changeme-set-in-production-32chars!}
+      - ACCESS_CODE=${ACCESS_CODE:-pps2025}
+      - SESSION_TTL=86400
+    networks:
+      - cursopps
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+
+  tools:
+    build:
+      context: ./tools
+      dockerfile: Dockerfile
+    image: cursopps-tools:latest
+    container_name: cursopps-tools
+    restart: unless-stopped
+    networks:
+      - cursopps
+    # Sin acceso a internet desde la terminal (red interna solo)
+    dns:
+      - 127.0.0.1
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW      # para nmap, ping
+      - NET_BIND_SERVICE
+    mem_limit: 512m
+    cpus: "0.5"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:7681"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: cursopps-frontend:latest
+    container_name: cursopps-frontend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8088}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+      tools:
+        condition: service_healthy
+    networks:
+      - cursopps
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  cursopps:
+    driver: bridge
+    name: cursopps-net

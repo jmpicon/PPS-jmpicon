@@ -1,0 +1,46 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+frontend/dist/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+*.log
+
+# Claude
+.claude/
+
+# Contenido del curso (PDFs/PPTX — se añaden manualmente en cada máquina)
+Modulo1/
+Modulo2/
+Modulo3/
+Modulo4/
+Modulo5/
+Modulo6/
+
+# Documentos locales
+*.docx
+*.pptx

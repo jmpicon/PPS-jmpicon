@@ -1,0 +1,9 @@
+[build]
+builder = "dockerfile"
+
+# Railway despliega frontend y backend como servicios separados.
+# Configurar en el dashboard de Railway:
+#   Servicio "backend"  → Dockerfile: backend/Dockerfile
+#   Servicio "frontend" → Dockerfile: frontend/Dockerfile
+# Variables de entorno a configurar en Railway:
+#   ACCESS_CODE, SECRET_KEY, CONTENT_DIR, PORT

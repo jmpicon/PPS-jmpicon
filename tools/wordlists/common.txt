@@ -1,0 +1,10 @@
+admin
+password
+123456
+test
+root
+user
+guest
+administrator
+letmein
+welcome
