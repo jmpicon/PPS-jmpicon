@@ -44,15 +44,18 @@ Aquí tienes todo el material de mis tres módulos: temario, prácticas de clase
 
 </div>
 
-## Esta semana: 28 y 29 de octubre
+## Esta semana: del 3 al 5 de noviembre
 
-Chicos y chicas, aquí tenéis lo que vamos a trabajar estos dos días. Si tenéis actividades pendientes, empezad por la ruta de recuperación de vuestra guía; si vais al día, continuad con la ampliación.
+Cada alumno sigue su ritmo. **Si tienes prácticas anteriores pendientes, continúa desde donde te quedaste y complétalas antes de pasar a la nueva.** No hace falta repetir una práctica que ya tienes terminada. **Si estás al día, empieza la práctica nueva de tu módulo.** Guarda las evidencias y sigue las instrucciones de entrega de cada guía.
 
-- **Miércoles · Incidentes:** [práctica guiada de Wazuh, agentes y eventos](IC/practicas/2026-10-28-GUIA-WAZUH.md). Tenéis también los PDF anteriores y la guía de problemas habituales en [prácticas de Incidentes](IC/README.md).
-- **Jueves · Hacking Ético:** [continuación de TECNORIBERA](HE/practicas/2026-10-29-GUIA-TECNORIBERA.md). Si os falta la enumeración anterior, recuperadla desde [prácticas de Hacking Ético](HE/README.md).
-- **Próximas sesiones:** [guías de noviembre y 1 de diciembre](docs/sesiones/README.md).
+- **Martes 3 · Puesta en Producción Segura (PPS):** si terminaste la práctica anterior de código seguro, pasa a [pruebas automatizadas con pytest](docs/sesiones/2026-11-03-PPS.md). Si no la terminaste, continúa con [la práctica 2 de código seguro](PPS/README.md) y consulta la recuperación del apartado 9 de la nueva guía.
+- **Miércoles 4 · Incidentes de Ciberseguridad (IC):** si completaste Wazuh, agentes y eventos, continúa con [triaje de alertas](docs/sesiones/2026-11-04-IC.md). Si te falta la práctica anterior, sigue la [guía de Wazuh del 28 de octubre](IC/practicas/2026-10-28-GUIA-WAZUH.md) antes de avanzar.
+- **Jueves 5 · Hacking Ético (HE):** si terminaste el inventario de TECNORIBERA, continúa con [enumeración de servicios web](docs/sesiones/2026-11-05-HE.md). Si tienes pendiente la enumeración anterior, termina primero [la guía del 29 de octubre](HE/practicas/2026-10-29-GUIA-TECNORIBERA.md).
+- **Próximas sesiones:** [calendario de prácticas de noviembre y diciembre](docs/sesiones/README.md).
 
-Las instrucciones están pensadas para que podáis trabajar por vuestra cuenta, sin compartir credenciales ni actuar fuera del laboratorio autorizado.
+**Al finalizar:** comprueba los requisitos de entrega de tu práctica, conserva capturas y resultados reales, y entrega tu propio trabajo. Si terminas pronto, utiliza el apartado de ampliación de la guía correspondiente.
+
+Las actividades son individuales y se realizan solo en el laboratorio autorizado. No compartas contraseñas ni datos personales.
 
 ## Sigue tu progreso
 
