@@ -1,108 +1,67 @@
-# Metasploitable 2 — máquina víctima para prácticas
+# Metasploitable 2: máquina víctima para HE
 
-## Qué es y para qué sirve
+## Qué es
 
-**Metasploitable 2** es una máquina virtual Linux (Ubuntu 8.04) **deliberadamente
-vulnerable**, publicada por Rapid7 (los autores de Metasploit) para practicar
-pentesting en un entorno legal y controlado. Trae a propósito servicios viejos y
-mal configurados: FTP con backdoor, Samba explotable, un `distccd` ejecutable
-remotamente, Tomcat con credenciales por defecto, MySQL/PostgreSQL abiertos,
-servicios UnrealIRCd troyanizados, aplicaciones web vulnerables (DVWA, Mutillidae,
-phpMyAdmin), etc.
+**Metasploitable 2** es una máquina virtual Linux (Ubuntu 8.04, 32 bits) vulnerable a
+propósito, publicada por Rapid7 (los autores de Metasploit) para practicar en un
+entorno legal y controlado. Trae servicios viejos y mal configurados: vsftpd con
+puerta trasera, Samba explotable, `distccd`, Tomcat con credenciales por defecto,
+MySQL y PostgreSQL abiertos, UnrealIRCd troyanizado y aplicaciones web
+vulnerables (DVWA, Mutillidae, phpMyAdmin).
 
-En el curso es el **objetivo de red clásico** para HE: donde aprendes a escanear
-con `nmap`, identificar servicios, buscar el exploit adecuado en Metasploit y
-conseguir acceso — y donde, desde el SOC (IC), ves cómo se detecta ese ataque.
+En el curso es el **objetivo de red clásico** de HE: enumerar, identificar el
+servicio, elegir el exploit, entrar y explicar qué huella deja. Complementa a los
+objetivos web en Docker (TECNORIBERA, Juice Shop, DVWA), que son aplicaciones; esta es
+una máquina entera.
 
-Complementa a los objetivos web en Docker (Juice Shop, DVWA en
-`objetivos/docker-compose.yml`): aquellos son aplicaciones web; Metasploitable es
-una **máquina entera** con muchos servicios de red que atacar.
+Es de 2012: sirve para aprender el **método**, no representa un objetivo moderno.
 
-> **Para qué NO sirve:** es de 2012 y muy antigua. Es ideal para *aprender el
-> método* (enumerar → identificar → explotar → post-explotación), no para
-> representar un objetivo moderno. Para técnicas actuales usamos los objetivos
-> Docker del curso y, más adelante, GOAD (Active Directory).
+## Descarga
 
----
+Fichero oficial en SourceForge, 825 MB:
 
-## Descarga directa
+- https://sourceforge.net/projects/metasploitable/files/Metasploitable2/metasploitable-linux-2.0.0.zip/download
+- SHA-256: `2ae8788e95273eee87bd379a250d86ec52f286fa7fe84773a3a8f6524085a1ff`
+  (MD5 `abb0a95bd4422397ed235a7284e2ed7f`, el que muestra SourceForge)
+- Documentación: https://docs.rapid7.com/metasploit/metasploitable-2/
 
-Proyecto oficial en SourceForge (archivo único, ~865 MB):
+El ZIP trae un disco VMware (`Metasploitable.vmdk`, 1,9 GB) que VirtualBox usa tal
+cual. Credenciales: `msfadmin` / `msfadmin`.
 
-- Página del proyecto: https://sourceforge.net/projects/metasploitable/files/Metasploitable2/
-- Enlace directo del fichero:
-  **https://sourceforge.net/projects/metasploitable/files/Metasploitable2/metasploitable-linux-2.0.0.zip/download**
-- Documentación de Rapid7: https://docs.rapid7.com/metasploit/metasploitable-2/
+## Importar y conectar
 
-Desde terminal:
-```bash
-curl -L -o metasploitable2.zip \
-  "https://sourceforge.net/projects/metasploitable/files/Metasploitable2/metasploitable-linux-2.0.0.zip/download"
-unzip metasploitable2.zip        # obtienes una carpeta Metasploitable2 con un .vmdk
+No se hace a mano: [`labnet-up.sh`](../labnet-up.sh) crea la VM (512 MB, disco IDE),
+la deja **solo** en la red interna `labnet` con la IP `10.10.10.13`, añade a la Kali
+una tarjeta en esa red (`10.10.10.50`) y hace una instantánea limpia:
+
+```
+./labnet-up.sh preparar ~/Descargas/metasploitable-linux-2.0.0.zip
+./labnet-up.sh arrancar
 ```
 
-El ZIP contiene un disco **VMware** (`.vmdk`) y sus ficheros de configuración.
-VirtualBox puede usar el `.vmdk` directamente (abajo).
+Detalle de la red y de cada orden: [LABORATORIO-VM.md](../LABORATORIO-VM.md).
+Hoja del alumnado: [Prepara tu equipo para Metasploitable](../../../docs/sesiones/HE-preparar-metasploitable.md).
 
-> **Credenciales por defecto:** usuario `msfadmin` / contraseña `msfadmin`
-> (también válidas por SSH una vez tenga IP en el lab).
+> **Aislamiento obligatorio.** Metasploitable está hecha para que la comprometan.
+> Nunca en adaptador puente ni con NAT: solo en `labnet`. `./labnet-up.sh comprobar`
+> no la deja arrancar si tiene otra tarjeta.
 
----
+## Arquitectura
 
-## Importar en VirtualBox
+x86 de 32 bits. Funciona en VirtualBox sobre PC Intel/AMD (los puestos del aula). En
+Mac con Apple Silicon no arranca en VirtualBox; ahí se trabaja con los objetivos
+Docker.
 
-No hay que "instalar" nada: se crea una VM nueva y se le engancha el disco `.vmdk`
-ya descargado.
+## Primer contacto desde Kali (en clase, con el alcance por escrito)
 
-1. VirtualBox → **Nueva** → Tipo *Linux*, versión *Ubuntu (32-bit)*, nombre
-   `metasploitable`.
-2. En el disco duro, elige **"Usar un archivo de disco duro virtual existente"** y
-   selecciona el `Metasploitable.vmdk` del ZIP.
-3. **Red: red interna `labnet`** (nunca puente/bridged). Con el script:
-   ```bash
-   ./labnet-up.sh wire          # la deja en intnet labnet
-   ./labnet-up.sh check         # confirma el aislamiento
-   ```
-4. Arranca, entra con `msfadmin`/`msfadmin` y ponle IP del lab (`10.10.10.13`):
-   ```bash
-   sudo ifconfig eth0 10.10.10.13 netmask 255.255.255.0
-   ```
-5. **Snapshot limpio** antes de atacarla: `./labnet-up.sh snapshot`.
-
-> **Aislamiento (obligatorio):** Metasploitable está hecha para ser vulnerable;
-> exponerla a una red real es un riesgo serio. Úsala **solo** en `intnet labnet`.
-> Si necesitas Internet puntual para algo, `wan-on` y luego `wan-off` antes de
-> atacar (ver [../LABORATORIO-VM.md](../LABORATORIO-VM.md)).
-
----
-
-## Nota de arquitectura (importante)
-
-Metasploitable 2 es **x86 (32-bit)**. Funciona en VirtualBox sobre PCs Intel/AMD
-(los equipos del aula). En **Mac con Apple Silicon (M1–M5)**, VirtualBox solo
-ejecuta invitados ARM, así que Metasploitable **no arranca** ahí. Alternativas en
-ese caso:
-
-- Usar los objetivos web del curso en Docker (multiplataforma): Juice Shop y DVWA.
-- Emular x86 con UTM/QEMU (muy lento, solo si no hay otra opción).
-
----
-
-## Primer contacto desde Kali (ejemplo)
-
-Con ambas VMs en `labnet` y la víctima en `10.10.10.13`:
-
-```bash
-# 1) Enumerar servicios
+```
 nmap -sV -p- 10.10.10.13
 
-# 2) Un clásico para entender el método: backdoor de vsftpd 2.3.4
 msfconsole -q
-msf6 > use exploit/unix/ftp/vsftpd_234_backdoor
-msf6 > set RHOSTS 10.10.10.13
-msf6 > run
+use exploit/unix/ftp/vsftpd_234_backdoor
+set RHOSTS 10.10.10.13
+run
 ```
 
-El objetivo didáctico no es "sacar la shell", es que sepas **explicar** qué
-servicio era vulnerable, por qué, qué huella deja el ataque y cómo se detectaría
-desde el SOC. Eso es lo que se evalúa.
+Lo que se evalúa no es "sacar la shell": es explicar qué servicio era vulnerable,
+por qué, qué huella deja el ataque y cómo se detectaría desde el SOC.

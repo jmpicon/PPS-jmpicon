@@ -5,6 +5,7 @@ Chicos y chicas, aquí tenéis las sesiones por orden de fecha. Podéis entrar d
 - **03/11 · PPS:** [Pruebas automáticas](2026-11-03-PPS.md)
 - **04/11 · IC:** [Triaje de alertas Wazuh](2026-11-04-IC.md)
 - **05/11 · HE:** [Enumeración web](2026-11-05-HE.md)
+- **Antes del 12/11 · HE:** [Prepara tu equipo para Metasploitable](HE-preparar-metasploitable.md)
 - **10/11 · PPS:** [Análisis estático con Bandit](2026-11-10-PPS.md)
 - **11/11 · IC:** [Reglas propias en Wazuh y línea temporal](2026-11-11-IC.md)
 - **12/11 · HE:** [Evaluación de hallazgos](2026-11-12-HE.md) *(pendiente de publicar)*
