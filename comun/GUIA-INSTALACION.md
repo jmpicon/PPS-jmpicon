@@ -1,63 +1,49 @@
 # Preparar el puesto de trabajo · Curso 2026–2027
 
-Vamos a preparar un entorno que podamos repetir y recuperar. Primero comprobaremos el puesto, después el material y, por último, la práctica concreta. Cada comprobación produce una evidencia: un programa instalado todavía no demuestra que el ejercicio funcione.
+Vamos a preparar un entorno que puedas repetir y recuperar. Primero comprobaremos el equipo, después el material y, por último, la práctica concreta. Cada comprobación deja una evidencia: que un programa esté instalado no demuestra que el ejercicio funcione.
 
-## 1. Qué necesitas y dónde se ejecuta cada cosa
+## 1. Qué tienes y dónde se hace cada cosa
 
-| Elemento | Función | Lugar |
+| Elemento | Para qué sirve | Dónde está |
 |---|---|---|
-| Windows del aula | Anfitrión de la máquina virtual | PC físico |
-| VirtualBox | Ejecuta la máquina de prácticas | Windows |
-| Kali Linux | Terminal, herramientas y objetivos locales | Máquina virtual |
-| Docker Engine + Compose | Ejecutan aplicaciones del laboratorio | Dentro de Kali |
-| Python y entornos virtuales | Scripts, pruebas y análisis de datos | Dentro de Kali |
-| SOC | Recibe eventos y permite investigar | Servidor Linux o VM dedicada del profesor |
-| Paquete de alumnado | Apuntes, fichas, datos y scripts | `~/xest-lab/2026-2027` dentro de Kali |
+| Ubuntu 26.04 LTS | Tu sistema principal | PC del aula |
+| Python 3.14 y entornos virtuales | Prácticas de PPS: pruebas, análisis de código | Ubuntu |
+| Docker Engine + Compose | Tu Wazuh y otros servicios del laboratorio | Ubuntu |
+| Wazuh (manager, indexer y dashboard) | Tu SOC para las prácticas de IC | Contenedores Docker en Ubuntu |
+| Agente de Wazuh | Envía los eventos de tu Ubuntu a tu Wazuh | Ubuntu |
+| VirtualBox | Ejecuta la máquina virtual de Hacking Ético | Ubuntu |
+| Kali Linux | Herramientas y laboratorio de HE (TECNORIBERA) | Máquina virtual |
 
-Los comandos de esta guía se ejecutan en la **terminal de Kali**, salvo que el paso diga Windows o servidor. `localhost` siempre significa el equipo o la VM donde estás ejecutando el navegador/comando. El navegador de Windows no comparte el localhost de Kali.
+En resumen: **PPS e IC se hacen en el Ubuntu; HE se hace en la Kali.** Cada práctica te lo recuerda al principio.
 
-Como punto de partida para el laboratorio básico, reserva 4 vCPU, 8 GB de RAM y 60 GB de disco para Kali si el anfitrión puede asumirlo. Es una propuesta de preparación, no una medición del aula. Con menos memoria, arranca solo los servicios de la sesión. El SOC completo necesita recursos aparte; no lo arranques junto a todos los objetivos en cada puesto.
+`localhost` (`127.0.0.1`) es siempre el equipo donde ejecutas la orden. El `localhost` de la Kali no es el del Ubuntu: si abres el dashboard de Wazuh en el navegador de la Kali con `https://127.0.0.1`, no lo encontrarás. Ábrelo en el navegador del Ubuntu.
 
-## 2. Importar Kali en Windows
+Wazuh y la Kali consumen bastante memoria. Si tu equipo va justo, no los tengas a la vez a pleno rendimiento: cuando trabajes en la Kali, para Wazuh con `docker compose stop` desde su carpeta y vuelve a arrancarlo con `docker compose start` cuando lo necesites.
 
-1. Utiliza la máquina del aula preparada por el profesor. Registra el nombre de la imagen, fecha, arquitectura y hash SHA-256.
-2. Si recibes una `.ova`, abre VirtualBox → **Importar servicio virtualizado** y selecciona el fichero. Si recibes la imagen oficial comprimida `.7z`, extráela y utiliza **Añadir** sobre el fichero `.vbox`: no se importa como OVA.
-3. Revisa RAM, CPU y carpeta de almacenamiento antes de iniciar. La imagen debe corresponder a la arquitectura del equipo: la imagen amd64 del aula no es una VM ARM para un Mac Apple Silicon.
-4. Arranca Kali con las credenciales facilitadas. En la imagen oficial, cambia las credenciales iniciales tras el primer acceso; no publiques las de la plantilla del aula.
-5. Comprueba teclado, pantalla y terminal. Ejecuta `uname -m`, `python3 --version` y `df -h` y guarda la salida.
-6. Apaga Kali y crea una instantánea llamada `base-curso-validada` cuando las comprobaciones de esta guía estén completas. Una instantánea no sustituye la copia de tus entregas fuera de la VM.
-
-Fuente de la distinción `.ova`/`.vbox`: [documentación oficial de Kali para VirtualBox](https://www.kali.org/docs/virtualization/import-premade-virtualbox/).
-
-## 3. Red del laboratorio
-
-Para prácticas web locales, el navegador y las herramientas funcionan dentro de la misma Kali y los puertos se publican en `127.0.0.1`. Así no necesitan estar expuestos a la LAN.
-
-Las prácticas de interceptación, directorio activo o sensores requieren la topología específica de su ficha. Utiliza una **red interna de VirtualBox** con las VMs participantes, o una red de laboratorio aislada configurada por el profesor. La red interna de VirtualBox no conecta automáticamente con el servidor físico ni con un switch externo.
-
-Para recibir el material, usa USB/carpeta compartida o una conexión aprobada al servidor de aula. Si se utiliza adaptador puente, debe estar conectado a la red aislada de prácticas y verificarse su alcance. NAT se utiliza para preparar actualizaciones con Internet; no da visibilidad automática al sensor sobre otros equipos.
-
-Anota IP, máscara, puerta de enlace y nombre de interfaz:
+Antes de empezar, guarda la salida de estas órdenes en el Ubuntu:
 
 ```bash
-ip -br addr
-ip route
+grep PRETTY_NAME /etc/os-release
+uname -m
+python3 --version
+free -h
+df -h ~
 ```
 
-No copies la IP de un ejemplo como si fuera la asignada a tu equipo. Antes de una práctica activa verifica el objetivo exacto del ROE.
+Tienes que ver Ubuntu 26.04, `x86_64` y Python 3.14.
 
-## 4. Instalar la base con Internet (preparación de la VM)
+## 2. Docker en el Ubuntu
 
-Este apartado se realiza en la preparación, no en el aula desconectada. En una Kali limpia se puede usar su repositorio para Docker:
+Si Docker aún no está instalado, hazlo con los paquetes de Ubuntu (necesitas Internet):
 
 ```bash
 sudo apt update
-sudo apt install -y docker.io docker-compose-v2 python3 python3-venv python3-pip git curl jq unzip
+sudo apt install -y docker.io docker-compose-v2 git curl jq unzip
 sudo systemctl enable --now docker
 sudo usermod -aG docker "$USER"
 ```
 
-Cierra sesión y vuelve a entrar para cargar el grupo. Después:
+Cierra la sesión y vuelve a entrar para que se aplique el grupo. Después comprueba:
 
 ```bash
 docker version
@@ -65,129 +51,166 @@ docker compose version
 docker info
 ```
 
-Debe aparecer información del cliente y del servidor Docker, y Compose debe reconocer `docker compose`. Si tu edición de Kali no ofrece `docker-compose-v2`, consulta los paquetes disponibles con `apt-cache search docker-compose`; prepara una edición compatible o instala el plugin desde la documentación oficial. No mezcles a ciegas paquetes `docker.io` con `docker-ce`.
+Debe aparecer información del cliente y del servidor, y `docker compose` tiene que funcionar. No mezcles los paquetes `docker.io` de Ubuntu con `docker-ce` de la web de Docker: elige uno.
 
-Errores habituales:
-
-| Error | Qué comprobar | Cómo continuar |
+| Error | Qué comprobar | Cómo seguir |
 |---|---|---|
-| Permission denied en docker.sock | `id -nG` | Cierra sesión y entra otra vez; verifica que perteneces al grupo docker |
-| Cannot connect to Docker daemon | `systemctl status docker` | Arranca el servicio y vuelve a ejecutar `docker info` |
-| compose no es un comando | `docker compose version` | Falta Compose v2 en esa máquina |
-| No space left on device | `df -h` y `docker system df` | Amplía espacio o revisa imágenes prescindibles; conserva las de las prácticas offline |
-| Exec format error | `uname -m` y arquitectura de la imagen/binario | Usa artefactos para la arquitectura de la VM |
+| `permission denied` en `docker.sock` | `id -nG` | Cierra la sesión y vuelve a entrar; comprueba que estás en el grupo `docker` |
+| `Cannot connect to the Docker daemon` | `systemctl status docker` | Arranca el servicio y repite `docker info` |
+| `compose` no es un comando | `docker compose version` | Falta `docker-compose-v2` |
+| `No space left on device` | `df -h` y `docker system df` | Libera espacio con cuidado: no borres las imágenes ni los volúmenes de Wazuh y no lances `docker system prune` sin mirar antes qué va a eliminar |
 
-El grupo docker permite operaciones privilegiadas sobre el equipo; se utiliza en la VM de prácticas. [Instalación Docker en Kali](https://www.kali.org/docs/containers/installing-docker-on-kali/) y [alternativa oficial Docker Engine para Debian y derivados](https://docs.docker.com/engine/install/debian/).
+Pertenecer al grupo `docker` equivale a tener privilegios de administrador en el equipo. En el puesto del aula es lo que necesitamos; no lo hagas a la ligera en otros equipos.
 
-## 5. Copiar y comprobar el material sin Internet
+## 3. Tu Wazuh en el Ubuntu
 
-1. Copia el paquete **ALUMNADO** completo; conserva su estructura de carpetas.
-2. Coloca la carpeta `2026-2027` dentro de `~/xest-lab/`. No la mezcles con una entrega antigua.
-3. Abre `INICIO.html` en el navegador: es un índice local y no requiere servidor ni cuenta.
-4. Comprueba los archivos con el verificador incluido:
+Cada uno tiene su propio Wazuh en su ordenador. El montaje completo, paso a paso, está en la **Práctica 0 de IC** («Monta tu Wazuh SOC paso a paso», en la web, IC, Prácticas). Aquí tienes solo lo esencial para comprobarlo o rehacerlo.
+
+El indexer necesita este ajuste del sistema; sin él, su contenedor se reinicia una y otra vez:
 
 ```bash
-cd ~/xest-lab/2026-2027
-python3 comun/verificar-material.py
+sudo sysctl -w vm.max_map_count=262144
+echo "vm.max_map_count=262144" | sudo tee /etc/sysctl.d/99-wazuh.conf
 ```
 
-El resultado debe mostrar cero archivos ausentes o modificados respecto a la distribución. Ejecuta esta comprobación **antes** de editar las prácticas. Copia los ejercicios a una carpeta de trabajo si quieres conservar intactos los originales.
-
-## 6. Python sin romper los paquetes de Kali
-
-Cada práctica con dependencias usa un entorno virtual. No instales paquetes del curso en el Python del sistema con `sudo pip`.
-
-Con Internet, durante la preparación:
+Usamos la versión 4.14.8 de `wazuh-docker`, en modo `single-node`:
 
 ```bash
-python3 -m venv ~/venvs/curso
-source ~/venvs/curso/bin/activate
-python -m pip install pytest pytest-cov coverage flask argon2-cffi requests
-python -m pip freeze > ~/venvs/curso/versiones.txt
+cd ~
+git clone https://github.com/wazuh/wazuh-docker.git -b v4.14.8
+cd ~/wazuh-docker/single-node
+docker compose -f generate-indexer-certs.yml run --rm generator
+docker compose up -d
+docker compose ps
 ```
 
-Sin Internet, el profesor debe haber preparado las ruedas para **la misma versión de Python, sistema y arquitectura**:
+Tienen que aparecer `wazuh.manager`, `wazuh.indexer` y `wazuh.dashboard` en marcha. Que estén en marcha no basta: dales un par de minutos y comprueba que el dashboard carga y te deja entrar. Si alguno se reinicia una y otra vez, mira qué dice con `docker compose logs --tail=100 wazuh.indexer` (o el servicio que falle). El dashboard se abre en el navegador del Ubuntu en `https://127.0.0.1`; el aviso del certificado es normal porque es autofirmado. La contraseña inicial está en la práctica 0: cámbiala y no la pongas en capturas ni en entregas.
+
+Todas las órdenes de Wazuh de las prácticas se lanzan desde `~/wazuh-docker/single-node`. Si lo tienes en otra carpeta, ajusta la ruta.
+
+## 4. El agente de Wazuh en el Ubuntu
+
+El agente está instalado en el **propio Ubuntu**, el mismo equipo donde corre Wazuh. Por eso, en tu caso, la dirección del manager es `127.0.0.1`: los contenedores publican en el Ubuntu los puertos 1514 y 1515 (TCP), por los que se conecta y se registra el agente. Si algún día pones un agente en otra máquina (por ejemplo, en la Kali), allí tendrás que usar la IP real del Ubuntu, no `127.0.0.1`.
+
+La instalación está en la práctica 0. Para comprobar que funciona:
 
 ```bash
-python3 -m venv ~/venvs/curso
-source ~/venvs/curso/bin/activate
-python -m pip install --no-index --find-links ~/xest-repo/wheels -r ~/xest-repo/requirements-lock.txt
+sudo systemctl status wazuh-agent --no-pager
+sudo grep -E "<address>|<port>" /var/ossec/etc/ossec.conf
+cd ~/wazuh-docker/single-node
+docker compose exec wazuh.manager /var/ossec/bin/agent_control -l
 ```
 
-Comprueba `python -c "import pytest, flask, argon2, requests; print('Importaciones OK')"`. Si falta una rueda, no continúes fingiendo una instalación completa: utiliza la VM preparada o completa el repositorio en un equipo con Internet. Un `pip freeze` de macOS no es un repositorio offline para Kali.
+Tu agente tiene que salir como `Active`. Si sale `Disconnected` o `Never connected`, mira las últimas líneas de su registro con `sudo tail -n 50 /var/ossec/logs/ossec.log` y el checklist de troubleshooting de Wazuh de la web.
 
-## 7. Cargar las imágenes y arrancar objetivos
+Ubuntu 26.04 trae `rsyslog`, así que los mensajes del sistema llegan a `/var/log/syslog`. Algunas prácticas de IC escriben ahí eventos de prueba con `logger` para que tu agente los recoja.
 
-El paquete de documentos no incluye las imágenes de varios gigabytes. El profesor proporciona una VM preparada o un repositorio de imágenes exportado tras validar la arquitectura del aula.
+## 5. Python para PPS
+
+Cada práctica de PPS usa su propio entorno virtual dentro de la carpeta del proyecto. No instales nada con `sudo pip`: en Ubuntu 26.04 te dará `externally-managed-environment`, y hace bien en impedírtelo.
+
+Con Internet:
 
 ```bash
-# Repite para cada .tar recibido y verificado:
-docker load -i ~/xest-repo/images/objetivos.tar
-cd ~/xest-lab/2026-2027/comun/entornos/objetivos
-docker compose config --quiet
-docker compose images
+sudo apt install -y python3-venv
+cd CARPETA_DE_LA_PRACTICA
+python3 -m venv .venv
+. .venv/bin/activate
+pip install LO_QUE_PIDA_LA_PRACTICA
 ```
 
-Arranca únicamente lo necesario:
+Si `python3 -m venv` dice que `ensurepip is not available`, te falta `python3-venv`: es el `apt install` de la primera línea.
+
+**No instales Bandit con `apt`.** El paquete de Ubuntu 26.04 (Bandit 1.7.10) no funciona con Python 3.14: se salta todos los ficheros, dice que no hay ningún aviso y termina como si todo fuera bien. Instálalo siempre con `pip` dentro del entorno virtual. Si alguna vez Bandit te dice `No issues identified` pero más abajo aparece `Files skipped` con `exception while scanning file`, ese resultado no vale.
+
+### Sin Internet: el USB de PPS
+
+Si en el aula no hay Internet, te paso un USB con la carpeta `PPS-offline`. Lleva `python3-venv` para Ubuntu 26.04 y los paquetes de Python que usamos este trimestre: `pytest`, `pytest-cov`, `hypothesis`, `bandit[toml]`, `flask` y `requests`. Desde la carpeta de tu práctica:
 
 ```bash
-# PPS UT3: portal de referencia
-docker compose up -d --pull never portal-soc
-curl -fS --connect-timeout 3 --max-time 10 http://127.0.0.1:8080/
-
-# Prácticas web: Juice Shop y DVWA (incluye su base de datos)
-docker compose up -d --pull never juice-shop dvwa
+sh /media/TU_USUARIO/NOMBRE_DEL_USB/PPS-offline/instalar.sh
+. .venv/bin/activate
 ```
 
-`--pull never` evita depender de una descarga en clase. Si la imagen falta, Docker debe avisar: cargarla es un requisito, no un paso opcional. `docker compose config` comprueba la configuración, pero no demuestra que arranque ni que la aplicación funcione.
+El script comprueba que estás en un Ubuntu 26.04 de 64 bits con Python 3.14, instala `python3-venv` si te falta (te pedirá tu contraseña), crea `.venv` e instala todo sin conexión. Al final te muestra las versiones de `pytest` y `bandit`. Si te dice que no es tu versión de Python, probablemente estás en la Kali: las prácticas de PPS se hacen en el Ubuntu.
 
-| Servicio | URL en el navegador de Kali | Comprobación funcional |
-|---|---|---|
-| Portal SOC de referencia | `http://127.0.0.1:8080` | Página visible y contenido reconocible |
-| Juice Shop | `http://127.0.0.1:3000` | Catálogo carga; registro/login con cuenta ficticia |
-| DVWA | `http://127.0.0.1:8081/setup.php` | Crear/resetear BD solo al iniciar el laboratorio; después login |
-| Vuln-web histórico | `http://127.0.0.1:8082` | Solo para la ficha que lo requiera |
-| bWAPP histórico | `http://127.0.0.1:8083` | Inicializar siguiendo la imagen; verificar login y ejercicio |
+`pip-audit` no va en el USB: necesita Internet para consultar la base de datos de vulnerabilidades.
 
-DVWA necesita su servicio de base de datos; esta edición lo incluye. El nivel de seguridad se comprueba en la interfaz de DVWA y se registra en cada evidencia. No se da por aplicado por una variable de entorno del compose. Consulta [DVWA oficial](https://github.com/digininja/DVWA).
+## 6. La Kali en VirtualBox
 
-Si una aplicación devuelve 200 pero no permite entrar o completar la operación, aún no está validada. Consulta `docker compose ps` y `docker compose logs --tail=100 NOMBRE-SERVICIO`. No publiques logs que contengan claves.
+La Kali es para Hacking Ético. Ya la tienes importada en VirtualBox. Comprueba que sigue en buen estado:
 
-## 8. Nombres de laboratorio y puertos
+1. Revisa en VirtualBox la memoria, las CPU y el disco asignados. Si el Ubuntu va justo de memoria, no le des a la Kali más de la mitad de la RAM del equipo.
+2. Arráncala y ejecuta `uname -m`, `ip -br addr` y `df -h`. Guarda la salida.
+3. Con la Kali apagada y en buen estado, crea una instantánea llamada `base-curso-validada`. Una instantánea no sustituye a la copia de tus entregas: guárdalas también fuera de la VM.
 
-Las fichas usan nombres como `juice.xest.local` o `portal-soc.xest.local` en lugar de direcciones. Así el mismo comando sirve tanto si el objetivo está en tu puesto como si está en un servidor del aula: lo único que cambia es a qué dirección resuelve el nombre.
+Si alguna vez tienes que volver a importarla: una `.ova` se abre con **Archivo → Importar servicio virtualizado**; la imagen oficial `.7z` se descomprime y se abre con **Máquina → Añadir** sobre el fichero `.vbox`. Más información en la [documentación oficial de Kali para VirtualBox](https://www.kali.org/docs/virtualization/import-premade-virtualbox/).
 
-| Dónde está el servicio | Fichero de nombres | Dirección |
-|---|---|---|
-| Objetivos web (Juice Shop, DVWA, portal, bWAPP) en tu Kali — **modo por defecto** | `entornos/objetivos/hosts-puesto` | `127.0.0.1` |
-| SOC (Wazuh, TheHive, MISP) y objetivos servidos por el profesor | `entornos/objetivos/hosts-aula` o DNS del laboratorio | IP de la VLAN que indique el profesor |
+### Red de la Kali
 
-Añade las líneas solo si el nombre aún no existe, y nunca mezcles las dos versiones del mismo nombre:
+Para las prácticas web locales, el navegador y las herramientas funcionan dentro de la propia Kali y los servicios se publican en `127.0.0.1`, sin exponerlos a la red del aula.
+
+TECNORIBERA y las prácticas que necesitan varias máquinas usan una **red interna de VirtualBox** o la red aislada que prepare el profesor. Nunca lances pruebas contra la red del instituto ni contra equipos de compañeros. La red NAT de VirtualBox sirve para actualizar la Kali con Internet; no la conecta a la red interna del laboratorio. Usa siempre la red que indique la ficha.
+
+Anota la IP, la máscara, la puerta de enlace y el nombre de la interfaz:
 
 ```bash
+ip -br addr
+ip route
+```
+
+No copies la IP de un ejemplo como si fuera la tuya. Antes de cualquier prueba activa, comprueba que el objetivo es exactamente el autorizado en la ficha.
+
+### Objetivos web dentro de la Kali
+
+Algunas fichas de HE arrancan aplicaciones vulnerables (Juice Shop, DVWA…) con Docker **dentro de la Kali**, siempre publicadas solo en `127.0.0.1`. Ese Docker es independiente del del Ubuntu: tiene sus propias imágenes, contenedores, redes y puertos, y sus órdenes se escriben en la terminal de la Kali. Si la Kali no lo tiene, en la preparación con Internet:
+
+```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose-v2
+sudo systemctl enable --now docker
+sudo usermod -aG docker "$USER"
+```
+
+Arranca solo lo que pida la ficha y comprueba que funciona de verdad (que puedes iniciar sesión o completar la operación), no solo que responde con un 200. Para ver qué pasa: `docker compose ps` y `docker compose logs --tail=100 NOMBRE_DEL_SERVICIO`.
+
+Las fichas usan nombres como `juice.xest.local` o `portal-soc.xest.local` en vez de direcciones. Así la misma orden sirve tanto si el objetivo está en tu Kali como si lo sirve el profesor: solo cambia a qué dirección apunta el nombre. Para los objetivos de tu Kali (lo normal) usa `comun/entornos/objetivos/hosts-puesto`, que los apunta a `127.0.0.1`. Usa `hosts-aula` solo si el profesor sirve los objetivos desde el aula, y nunca mezcles las dos versiones de un mismo nombre. La orden se lanza desde la carpeta donde tengas el material del curso (la que contiene `comun`) y solo añade las líneas si el nombre no existe todavía:
+
+```bash
+cd CARPETA_DEL_MATERIAL
 getent hosts juice.xest.local || sudo tee -a /etc/hosts < comun/entornos/objetivos/hosts-puesto
-getent hosts portal-soc.xest.local      # debe mostrar 127.0.0.1 en modo puesto
-curl -I --max-time 10 http://portal-soc.xest.local:8080/
+getent hosts juice.xest.local portal-soc.xest.local
 ```
 
-Si `curl` responde `Connection refused`, el nombre resuelve pero el contenedor no está levantado (`docker compose ps`). Si responde `Could not resolve host`, falta la línea en `/etc/hosts`. Si tarda y acaba en `timed out`, el nombre apunta a una IP del aula que no existe en tu red: revisa que no hayas copiado `hosts-aula` para los objetivos locales.
+La última orden tiene que mostrar `127.0.0.1` para los dos nombres. Si aparece otra dirección, revisa `/etc/hosts` antes de seguir.
 
-Varios laboratorios usan el puerto 8080 (portal, proxy, mitmproxy). No los arranques simultáneamente: detén el servicio anterior o aplica el puerto alternativo previsto en la ficha. Confirma con `ss -ltnp`.
+Si `curl` contesta `Connection refused`, el nombre funciona pero el contenedor no está levantado. Si contesta `Could not resolve host`, falta la línea en `/etc/hosts`. Si se queda esperando hasta `timed out`, el nombre apunta a una IP del aula que no está en tu red: revisa que no hayas copiado `hosts-aula`.
 
-## 9. Cómo añadir herramientas por necesidad
+Varios laboratorios usan el puerto 8080 (el portal, ZAP, mitmproxy). No los arranques a la vez: para el anterior o usa el puerto alternativo que indique la ficha. Compruébalo con `ss -ltnp`.
 
-Antes de instalar, identifica la ficha y el resultado que necesitas. El catálogo histórico contiene alternativas y recursos online; no todos son requisitos del curso ni funcionan offline. La guía de herramientas explica los grupos y las pruebas de aceptación.
+## 7. El material del curso
 
-- Paquete de Kali: `apt-cache policy NOMBRE`, después `sudo apt install NOMBRE` en preparación.
-- Aplicación Python: usa `pipx` o un entorno virtual y el proyecto oficial; no deduzcas el nombre del paquete a partir del nombre comercial.
-- Binario Go: compila la versión elegida en una máquina compatible y conserva `go version -m RUTA_BINARIO`.
-- Contenedor: registra etiqueta, digest, arquitectura, puertos, volúmenes y prueba funcional.
-- Servicio con API: registra cuenta/plan, permisos y límites. No lo conviertas en dependencia de una clase sin Internet.
+Todo el material está en la web del curso y en el repositorio. Descarga cada práctica en el sistema donde la vas a hacer: las de PPS e IC en el Ubuntu y las de HE en la Kali.
 
-Para preparar una OVA, instala las herramientas de cada bloque, abre las aplicaciones gráficas al menos una vez, precarga datos/reglas y reinicia sin conexión antes de exportar. Un verificador de nombres de ejecutables no sustituye ese ensayo.
+Algunas fichas de unidades anteriores dan por hecho que tienes el material completo en `~/xest-lab/2026-2027`. Si una ficha usa esa ruta, crea la carpeta en el sistema donde vayas a hacerla y copia ahí el material, o ajusta la ruta a tu carpeta.
 
-## 10. Cierre de sesión y recuperación
+Trabaja siempre sobre una copia: descomprime el ZIP de la práctica en tu carpeta de trabajo (por ejemplo, `~/pps`, `~/ic` o `~/he`) y conserva el ZIP original por si necesitas empezar de cero. Si te paso material por USB, cópialo antes de usarlo y no trabajes directamente sobre el USB.
 
-Guarda informe, comandos, versiones, salidas y hashes antes de detener el entorno. `docker compose stop` permite parar; `docker compose down` elimina contenedores y redes del proyecto, pero normalmente conserva volúmenes. No utilices `down -v` como cierre rutinario: elimina datos persistentes.
+## 8. Cómo añadir herramientas
 
-Si necesitas repetir desde cero, usa la instantánea inicial o el procedimiento de reinicio de la práctica, conservando fuera las evidencias. Anota qué has restaurado: código, base de datos, VM o todos ellos.
+Antes de instalar algo, ten claro qué ficha lo necesita y para qué.
+
+- Paquete del sistema: `apt-cache policy NOMBRE` y después `sudo apt install NOMBRE`, con Internet.
+- Herramienta de Python: entorno virtual o `pipx`, desde el proyecto oficial. No deduzcas el nombre del paquete a partir del nombre comercial de la herramienta.
+- Contenedor: anota la etiqueta, los puertos, los volúmenes y la prueba que demuestra que funciona.
+- Servicio en línea con API: anota la cuenta, el plan y sus límites. Ninguna clase debe depender de él si no hay Internet.
+
+## 9. Al terminar la sesión
+
+Guarda el informe, las órdenes, las versiones y las salidas antes de parar nada.
+
+`docker compose stop` para los contenedores y los deja como están. `docker compose down` los elimina junto con sus redes, aunque normalmente conserva los volúmenes. **Nunca uses `docker compose down -v` con Wazuh**: borra los volúmenes, y con ellos tus alertas, tus agentes registrados y tu configuración.
+
+La instantánea de la Kali no guarda tu Wazuh: Wazuh vive en el Ubuntu, en sus volúmenes de Docker.
+
+Si necesitas volver a empezar, usa la instantánea de la Kali o el procedimiento de reinicio de la práctica, y guarda antes tus evidencias fuera. Anota qué has restaurado: el código, la base de datos, la VM o todo.

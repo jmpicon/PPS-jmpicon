@@ -1,7 +1,7 @@
 # Enumeración web TECNORIBERA · NN · 05/11/2026
 
 IP de mi Kali:            Autorización (quién y cuándo):
-Objetivo: 10.77.0.10      Puertos: 80, 8080, 3000
+IP_PORTAL de hoy:         Puertos: 80, 8080, 3000
 Hora de inicio:           Hora de fin:
 
 ## 1. Bitácora
