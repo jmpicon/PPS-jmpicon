@@ -1,0 +1,18 @@
+# Servicio systemd de miweb. instalar-servicio.sh cambia USUARIO y CARPETA
+# por los tuyos y lo copia a /etc/systemd/system/miweb.service.
+[Unit]
+Description=miweb (reservas del aula) con gunicorn
+After=network.target
+
+[Service]
+User=USUARIO
+Group=USUARIO
+WorkingDirectory=CARPETA
+EnvironmentFile=/home/USUARIO/.config/miweb/miweb.env
+ExecStart=CARPETA/.venv/bin/gunicorn --workers 2 --preload --bind 127.0.0.1:8000 wsgi:app
+Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

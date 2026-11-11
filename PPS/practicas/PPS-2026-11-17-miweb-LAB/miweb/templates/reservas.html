@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Mis reservas</h1>
+<form action="{{ url_for('buscar') }}">
+  <label>Buscar por motivo <input name="q" value="{{ busqueda or '' }}"></label>
+  <button>Buscar</button>
+</form>
+{% if busqueda %}<p>Resultados para: {{ busqueda }}</p>{% endif %}
+<table>
+<tr><th>Aula</th><th>Fecha</th><th>Franja</th><th></th></tr>
+{% for r in reservas %}
+<tr><td>{{ r.aula }}</td><td>{{ r.fecha }}</td><td>{{ r.franja }}</td>
+<td><a href="{{ url_for('ver_reserva', reserva_id=r.id) }}">Ver</a></td></tr>
+{% else %}
+<tr><td colspan="4">No hay reservas.</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

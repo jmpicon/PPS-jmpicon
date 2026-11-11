@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Reservas del aula de informática</h1>
+<p>Reserva el aula para tus prácticas, exámenes o reuniones de equipo.</p>
+{% if not g.usuario_id %}<p><a href="{{ url_for('login') }}">Entra</a> o <a href="{{ url_for('registro_usuario') }}">crea una cuenta</a>.</p>{% endif %}
+{% endblock %}
