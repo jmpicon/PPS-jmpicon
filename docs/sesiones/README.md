@@ -8,7 +8,7 @@ Chicos y chicas, aquí tenéis las sesiones por orden de fecha. Podéis entrar d
 - **Antes del 12/11 · HE:** [Prepara tu equipo para Metasploitable](HE-preparar-metasploitable.md)
 - **10/11 · PPS:** [Análisis estático con Bandit](2026-11-10-PPS.md)
 - **11/11 · IC:** [Reglas propias en Wazuh y línea temporal](2026-11-11-IC.md)
-- **12/11 · HE:** [Evaluación de hallazgos](2026-11-12-HE.md) *(pendiente de publicar)*
+- **12/11 · HE:** [Valorar hallazgos con CVSS](2026-11-12-HE.md)
 - **17/11 · PPS:** [Secretos, configuración y dependencias](2026-11-17-PPS.md) *(pendiente de publicar)*
 - **18/11 · IC:** [Respuesta a incidentes](2026-11-18-IC.md) *(pendiente de publicar)*
 - **19/11 · HE:** [Informe de auditoría](2026-11-19-HE.md) *(pendiente de publicar)*
