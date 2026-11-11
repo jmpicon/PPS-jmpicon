@@ -1,0 +1,9 @@
+salud
+login
+logout
+registro
+reservas
+reservas/nueva
+buscar
+admin
+static
