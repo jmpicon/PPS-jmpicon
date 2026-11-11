@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Reserva {{ r.id }}</h1>
+<p><strong>{{ r.aula }}</strong>, {{ r.fecha }}, {{ r.franja }}. Reservada por {{ r.propietario }}.</p>
+<h2>Motivo</h2>
+<div class="motivo">{{ r.motivo|safe }}</div>
+{% endblock %}

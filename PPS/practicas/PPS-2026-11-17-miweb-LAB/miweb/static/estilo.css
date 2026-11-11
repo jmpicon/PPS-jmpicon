@@ -1,0 +1,11 @@
+body { font-family: sans-serif; margin: 0; color: #222; }
+header { background: #234; color: #fff; padding: .6em 1em; display: flex; justify-content: space-between; }
+header a { color: #fff; margin-left: 1em; text-decoration: none; }
+main { max-width: 52em; margin: 1.5em auto; padding: 0 1em; }
+label { display: block; margin: .6em 0; }
+input, select, textarea { display: block; margin-top: .2em; padding: .3em; width: 20em; }
+button { margin-top: .6em; padding: .4em 1em; }
+table { border-collapse: collapse; margin-top: 1em; }
+td, th { border: 1px solid #ccc; padding: .3em .8em; text-align: left; }
+.aviso { background: #ffd; border: 1px solid #cc9; padding: .5em; }
+.motivo { border-left: 3px solid #ccc; padding-left: 1em; }

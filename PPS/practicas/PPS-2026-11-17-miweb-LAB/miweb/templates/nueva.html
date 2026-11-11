@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Nueva reserva</h1>
+<form method="post">
+  <label>Aula <select name="aula"><option>Aula 1</option><option>Aula 2</option><option>Taller</option></select></label>
+  <label>Fecha <input name="fecha" type="date" required></label>
+  <label>Franja <select name="franja"><option>08:00-10:00</option><option>10:00-12:00</option><option>12:00-14:00</option></select></label>
+  <label>Motivo <textarea name="motivo" required></textarea></label>
+  <button>Reservar</button>
+</form>
+{% endblock %}
