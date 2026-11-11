@@ -306,10 +306,11 @@ def numerar(pdf: Path) -> int:
     from pypdf import PdfReader, PdfWriter
     from reportlab.pdfgen import canvas
 
-    lector = PdfReader(str(pdf))
-    total = len(lector.pages)
-    escritor = PdfWriter()
-    for n, pagina in enumerate(lector.pages, 1):
+    total = len(PdfReader(str(pdf)).pages)
+    # clone_from deja las páginas unidas al escritor: así merge_page funciona
+    # igual en pypdf 6 y en 7 (que exige la página ya asignada a un writer).
+    escritor = PdfWriter(clone_from=str(pdf))
+    for n, pagina in enumerate(escritor.pages, 1):
         ancho, alto = float(pagina.mediabox.width), float(pagina.mediabox.height)
         buf = io.BytesIO()
         c = canvas.Canvas(buf, pagesize=(ancho, alto))
@@ -319,7 +320,6 @@ def numerar(pdf: Path) -> int:
         c.save()
         buf.seek(0)
         pagina.merge_page(PdfReader(buf).pages[0])
-        escritor.add_page(pagina)
     with pdf.open("wb") as f:
         escritor.write(f)
     return total
