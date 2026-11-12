@@ -1,0 +1,17 @@
+# Configuración de GitGuardian para este repositorio de material docente.
+#
+# Las carpetas de laboratorio del curso contienen, A PROPÓSITO, credenciales de
+# ejemplo y aplicaciones con fallos de seguridad: son el objeto de las prácticas
+# (en Puesta en Producción Segura el alumnado aprende precisamente a sacar esos
+# secretos del código a un fichero .env). No son secretos reales ni dan acceso a
+# ningún sistema. Se excluyen del análisis de secretos para no generar alertas.
+version: 2
+secret:
+  ignored-paths:
+    - "PPS/practicas/**"
+    - "IC/practicas/**"
+    - "HE/practicas/**"
+    - "comun/entornos/**"
+  ignored-detectors:
+    - "Generic High Entropy Secret"
+    - "Generic Password"

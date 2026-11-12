@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Crear cuenta</h1>
+<form method="post">
+  <label>Usuario <input name="nombre" required></label>
+  <label>Contraseña (8 caracteres o más) <input name="clave" type="password" required></label>
+  <button>Crear cuenta</button>
+</form>
+{% endblock %}

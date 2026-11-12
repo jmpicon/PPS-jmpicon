@@ -9,13 +9,13 @@ Chicos y chicas, aquí tenéis las sesiones por orden de fecha. Podéis entrar d
 - **10/11 · PPS:** [Análisis estático con Bandit](2026-11-10-PPS.md)
 - **11/11 · IC:** [Reglas propias en Wazuh y línea temporal](2026-11-11-IC.md)
 - **12/11 · HE:** [Valorar hallazgos con CVSS](2026-11-12-HE.md)
-- **17/11 · PPS:** [Secretos, configuración y dependencias](2026-11-17-PPS.md) *(pendiente de publicar)*
-- **18/11 · IC:** [Respuesta a incidentes](2026-11-18-IC.md) *(pendiente de publicar)*
-- **19/11 · HE:** [Informe de auditoría](2026-11-19-HE.md) *(pendiente de publicar)*
-- **24/11 · PPS:** [Bastionado de la aplicación web](2026-11-24-PPS.md) *(pendiente de publicar)*
-- **25/11 · IC:** [Caso SOC](2026-11-25-IC.md) *(pendiente de publicar)*
-- **26/11 · HE:** [Cierre TECNORIBERA](2026-11-26-HE.md) *(pendiente de publicar)*
+- **17/11 · PPS:** [Pon en marcha tu web y sácale los secretos](2026-11-17-PPS.md)
+- **18/11 · IC:** [Simulacro de incidente sobre tu web](2026-11-18-IC.md)
+- **19/11 · HE:** [Audita tu propia web](2026-11-19-HE.md)
+- **24/11 · PPS:** [Bastiona tu web](2026-11-24-PPS.md)
+- **25/11 · IC:** [Caso SOC integral: investiga tu propio ataque](2026-11-25-IC.md)
+- **26/11 · HE:** [Cierra la auditoría: reverifica e informe](2026-11-26-HE.md)
 
-- **01/12 · PPS:** [Recuperación y consolidación](2026-12-01-PPS.md)
+- **01/12 · PPS:** [Entrega tu web y consolida el proyecto](2026-12-01-PPS.md)
 
 Para descargar los PDF anteriores de Wazuh y TECNORIBERA, entrad en [Incidentes](../../IC/README.md) o [Hacking Ético](../../HE/README.md). Las soluciones del profesor y cuestionarios de evaluación no se publican aquí.

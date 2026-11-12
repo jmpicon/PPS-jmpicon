@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reservas del aula</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+<header>
+  <a href="{{ url_for('inicio') }}"><strong>Reservas del aula</strong></a>
+  <nav>
+  {% if g.usuario_id %}
+    <a href="{{ url_for('mis_reservas') }}">Mis reservas</a>
+    <a href="{{ url_for('nueva_reserva') }}">Nueva reserva</a>
+    {% if g.rol == 'admin' %}<a href="{{ url_for('admin') }}">Administración</a>{% endif %}
+    <a href="{{ url_for('logout') }}">Salir ({{ g.usuario_nombre }})</a>
+  {% else %}
+    <a href="{{ url_for('login') }}">Entrar</a>
+    <a href="{{ url_for('registro_usuario') }}">Crear cuenta</a>
+  {% endif %}
+  </nav>
+</header>
+<main>
+{% for m in get_flashed_messages() %}<p class="aviso">{{ m }}</p>{% endfor %}
+{% block contenido %}{% endblock %}
+</main>
+</body>
+</html>

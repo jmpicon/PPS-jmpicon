@@ -1,0 +1,17 @@
+<!--
+  Dos fuentes nuevas para el agente de Wazuh de tu Ubuntu.
+  Copia los dos bloques <localfile> dentro de /var/ossec/etc/ossec.conf,
+  justo antes de la última línea </ossec_config>.
+-->
+
+  <!-- Registro de seguridad de miweb: una línea JSON por evento -->
+  <localfile>
+    <log_format>json</log_format>
+    <location>/var/log/miweb/seguridad.log</location>
+  </localfile>
+
+  <!-- Accesos a miweb a través de nginx (formato combined) -->
+  <localfile>
+    <log_format>syslog</log_format>
+    <location>/var/log/nginx/miweb_access.log</location>
+  </localfile>
